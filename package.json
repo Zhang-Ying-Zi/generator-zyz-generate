@@ -1,12 +1,12 @@
 {
   "name": "generator-zyz-generate",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "generator for generator",
   "main": "generators/app/index.js",
   "scripts": {
     "link": "npm link",
     "generate": "yo zyz-generate",
-    "postpublish": "git add . && git commit -m 'postpublish' && git push origin master"
+    "postpublish": "git push origin master"
   },
   "keywords": [
     "yeoman-generator"

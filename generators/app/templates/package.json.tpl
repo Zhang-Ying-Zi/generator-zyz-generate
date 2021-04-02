@@ -6,7 +6,7 @@
   "scripts": {
     "link": "npm link",
     "generate": "yo zyz-<%= appname %>",
-    "postpublish": "git add . && git commit -m 'postpublish' && git push origin master"
+    "postpublish": "git push origin master"
   },
   "keywords": [
     "yeoman-generator"
