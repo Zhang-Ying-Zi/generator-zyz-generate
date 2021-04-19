@@ -29,7 +29,7 @@ module.exports = class extends Generator {
     // this.fs.writeJSON('package.json', _.merge(pkgJsonFields, this.pkg));
   }
 
-  async prompting() {
+  prompting() {
     return this.prompt(config.prompts).then((answers) => {
       this.answers = answers;
 
@@ -39,10 +39,12 @@ module.exports = class extends Generator {
   }
 
   writing() {
+    const templateData = {
+      appname: this.answers.appname,
+    };
     const copy = (input, output) => {
       this.fs.copy(this.templatePath(input), this.destinationPath(output));
     };
-
     const copyTpl = (input, output, data) => {
       this.fs.copyTpl(
         this.templatePath(input),
@@ -56,22 +58,16 @@ module.exports = class extends Generator {
       mkdirp(item);
     });
 
-    const templateData = {
-      appname: this.answers.appname,
-    };
-
-    const hasTemplateDataItem = (item) => templateData && templateData[item];
-
     // Render Files
     config.filesToRender.forEach((file) => {
-      if (!file.when || hasTemplateDataItem(file.when)) {
+      if (!file.if || templateData[file.if]) {
         copyTpl(file.input, file.output, templateData);
       }
     });
 
     // Copy Files
     config.filesToCopy.forEach((file) => {
-      if (!file.when || hasTemplateDataItem(file.when)) {
+      if (!file.if || templateData[file.if]) {
         copy(file.input, file.output);
       }
     });

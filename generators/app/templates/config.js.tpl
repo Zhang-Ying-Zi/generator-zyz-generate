@@ -35,19 +35,29 @@ module.exports = {
       type: "input",
       name: "features3",
       message: "input type",
-    },
-  ],
-  filesToRender: [
-    {
-      input: "package.json.tpl",
-      output: "package.json",
+      store: true,
     },
   ],
   filesToCopy: [
     {
-      when: "typescript",
-      input: "tsconfig.json.tpl",
+      if: "typescript",
+      input: "tsconfig.json",
       output: "tsconfig.json",
+    },
+  ],
+  filesToRender: [
+    {
+      input: "babel.config.json.tpl",
+      output: "babel.config.json",
+    },
+  ],
+  filesToMerge: [
+    {
+      file: "package.json",
+      default: {
+      },
+      typescript: {
+      },
     },
   ],
   dirsToCreate: [],

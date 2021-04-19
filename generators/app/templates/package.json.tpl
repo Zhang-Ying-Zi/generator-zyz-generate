@@ -1,6 +1,6 @@
 {
   "name": "generator-zyz-<%= appname %>",
-  "version": "1.0.8",
+  "version": "1.0.0",
   "description": "generator for <%= appname %>",
   "main": "generators/app/index.js",
   "scripts": {
@@ -24,6 +24,7 @@
   "dependencies": {
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
-    "yeoman-generator": "^4.13.0"
+    "yeoman-generator": "^4.13.0",
+    "yeoman-remote": "^1.0.1"
   }
 }

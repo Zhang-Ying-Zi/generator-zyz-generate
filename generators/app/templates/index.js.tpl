@@ -1,4 +1,5 @@
 const Generator = require("yeoman-generator");
+const remote = require("yeoman-remote");
 const config = require("./config.js");
 const mkdirp = require("mkdirp");
 const path = require("path");
@@ -29,7 +30,7 @@ module.exports = class extends Generator {
     // this.fs.writeJSON('package.json', _.merge(pkgJsonFields, this.pkg));
   }
 
-  async prompting() {
+  prompting() {
     return this.prompt(config.prompts).then((answers) => {
       this.answers = answers;
 
@@ -39,10 +40,20 @@ module.exports = class extends Generator {
   }
 
   writing() {
-    const copy = (input, output) => {
-      this.fs.copy(this.templatePath(input), this.destinationPath(output));
+    const templateData = {
+      appname: this.options.appname || this.appname, // Default to current folder name
+      typescript: this.answers.typescript,
     };
-
+    // from github
+    const copy = (input, output) => {
+      this.fs.copy(
+        // this.templatePath(input),
+        input,
+        this.destinationPath(output)
+        // this.destinationRoot()
+      );
+    };
+    // from local template using EJS
     const copyTpl = (input, output, data) => {
       this.fs.copyTpl(
         this.templatePath(input),
@@ -51,29 +62,40 @@ module.exports = class extends Generator {
       );
     };
 
-    // Create extra directories
+    // Make Dirs
     config.dirsToCreate.forEach((item) => {
       mkdirp(item);
     });
 
-    const templateData = {
-      appname: this.options.appname || this.appname, // Default to current folder name
-    };
-
-    const hasTemplateDataItem = (item) => templateData && templateData[item];
+    // Merge Files
+    config.filesToMerge.forEach((file) => {
+      let fileJSON = this.fs.readJSON(file.file);
+      fileJSON = _.merge(fileJSON, file.default || {});
+      for (let keyData in templateData) {
+        if (templateData[keyData] && file[keyData])
+          fileJSON = _.merge(fileJSON, file[keyData] || {});
+      }
+      this.fs.writeJSON(file.file, fileJSON);
+    });
 
     // Render Files
     config.filesToRender.forEach((file) => {
-      if (!file.when || hasTemplateDataItem(file.when)) {
+      if (!file.if || templateData[file.if]) {
         copyTpl(file.input, file.output, templateData);
       }
     });
 
-    // Copy Files
-    config.filesToCopy.forEach((file) => {
-      if (!file.when || hasTemplateDataItem(file.when)) {
-        copy(file.input, file.output);
-      }
+    // Get Remote Templates
+    var done = this.async();
+    remote("Zhang-Ying-Zi", "generator-zyz-<%= appname %>-source", (err, cachePath) => {
+      // Copy Files
+      config.filesToCopy.forEach((file) => {
+        if (!file.if || templateData[file.if]) {
+          copy(path.join(cachePath, file.input), file.output);
+        }
+      });
+
+      done();
     });
   }
 

@@ -13,16 +13,6 @@ module.exports = {
       message: "请输入要生成的 generate 的 name : ",
     },
   ],
-  filesToRender: [
-    {
-      input: "package.json.tpl",
-      output: "package.json",
-    },
-    {
-      input: "README.md.tpl",
-      output: "README.md",
-    },
-  ],
   filesToCopy: [
     {
       input: "gitignore.tpl",
@@ -33,12 +23,22 @@ module.exports = {
       output: ".npmignore",
     },
     {
-      input: "index.js.tpl",
-      output: "generators/app/index.js",
-    },
-    {
       input: "config.js.tpl",
       output: "generators/app/config.js",
+    },
+  ],
+  filesToRender: [
+    {
+      input: "package.json.tpl",
+      output: "package.json",
+    },
+    {
+      input: "README.md.tpl",
+      output: "README.md",
+    },
+    {
+      input: "index.js.tpl",
+      output: "generators/app/index.js",
     },
   ],
   dirsToCreate: ["generators/app", "generators/app/templates"],
