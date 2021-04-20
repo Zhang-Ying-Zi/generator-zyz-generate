@@ -5,6 +5,8 @@ const mkdirp = require("mkdirp");
 const path = require("path");
 const _ = require("lodash");
 
+let templateData = {};
+
 module.exports = class extends Generator {
   constructor(args, opts) {
     super(args, opts);
@@ -20,7 +22,7 @@ module.exports = class extends Generator {
       required: false,
     });
 
-    // this.config.set("appname", this.options.appname);
+    // this.appname, // Default to current folder name
 
     // this.fs.read(this.templatePath('__tests__/index.js'));
     // this.pkg = this.fs.readJSON(this.destinationPath('package.json'), {});
@@ -31,19 +33,33 @@ module.exports = class extends Generator {
   }
 
   prompting() {
-    return this.prompt(config.prompts).then((answers) => {
-      this.answers = answers;
+    let prompts = [];
+    for (let prompt of config.prompts) {
+      if (this.options.hasOwnProperty(prompt.name)) {
+        templateData[prompt.name] = this.options[prompt.name];
+      } else {
+        prompts.push(prompt);
+      }
+    }
 
-      // this.config.set("typescript", this.answers.typescript);
-      // this.config.set("react", this.answers.react);
-    });
+    return prompts.length
+      ? this.prompt(prompts).then((answers) => {
+          for (let answerName in answers) {
+            templateData[answerName] = answers[answerName];
+          }
+        })
+      : null;
   }
 
   writing() {
-    const templateData = {
-      appname: this.options.appname || this.appname, // Default to current folder name
-      typescript: this.answers.typescript,
-    };
+    for (let key in templateData) {
+      this.config.set(key, templateData[key]);
+    }
+    let yoJSON = this.fs.readJSON(".yo-rc.json");
+    templateData = Object.assign(templateData, {
+      typescript: yoJSON["generator-zyz-babel"].typescript,
+      react: yoJSON["generator-zyz-babel"].react,
+    });
     // from github
     const copy = (input, output) => {
       this.fs.copy(
@@ -86,7 +102,7 @@ module.exports = class extends Generator {
     });
 
     // Get Remote Templates
-    var done = this.async();
+    let done = this.async();
     remote("Zhang-Ying-Zi", "generator-zyz-<%= appname %>-source", (err, cachePath) => {
       // Copy Files
       config.filesToCopy.forEach((file) => {
