@@ -35,7 +35,6 @@ module.exports = {
       type: "input",
       name: "features3",
       message: "input type",
-      store: true,
     },
   ],
   filesToCopy: [
