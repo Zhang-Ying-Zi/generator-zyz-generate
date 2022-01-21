@@ -23,8 +23,12 @@ module.exports = {
       output: ".npmignore",
     },
     {
+      input: "composeIndex.js.tpl",
+      output: "generators/app/index.js",
+    },
+    {
       input: "config.js.tpl",
-      output: "generators/app/config.js",
+      output: "generators/sub/config.js",
     },
   ],
   filesToRender: [
@@ -38,8 +42,8 @@ module.exports = {
     },
     {
       input: "index.js.tpl",
-      output: "generators/app/index.js",
+      output: "generators/sub/index.js",
     },
   ],
-  dirsToCreate: ["generators/app", "generators/app/templates"],
+  dirsToCreate: ["generators/sub", "generators/sub/templates"],
 };
